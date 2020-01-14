@@ -137,11 +137,11 @@ func (s *SmallArmsUnit) Roll() {
 	pip := 1.0
 	switch {
 	case ff > 20:
-		pip = 1.6
+		pip = 4.5
 	case ff > 16:
-		pip = 1.5
+		pip = 3.8
 	case ff > 14:
-		pip =
+		pip = 3.0
 	case ff > 12:
 		pip = 2.6
 	case ff > 10:
@@ -151,13 +151,13 @@ func (s *SmallArmsUnit) Roll() {
 	case ff > 6:
 		pip = 2.0
 	case ff > 4:
-		pip = 0.9
+		pip = 1.8
 	case ff > 3:
-		pip = 0.8
+		pip = 1.6
 	case ff > 2:
-		pip = 0.7
+		pip = 1.4
 	default:
-		pip = 0.6
+		pip = 1.0
 	}
 	totalPips := basePips + int(pip * float64(band))
 	println("band",band,"pippage", pip, "pips", totalPips)
