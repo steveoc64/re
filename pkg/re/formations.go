@@ -7,6 +7,15 @@ type Formation struct {
 	SATargetMod int
 }
 
+func GetFormation(name string) (Formation,bool) {
+	for _,v := range Formations {
+		if v.Name == name {
+			return v,true
+		}
+	}
+	return Formations[0],false
+}
+
 func (f Formation) String() string {
 	return f.Name
 }
@@ -27,7 +36,7 @@ var Formations = []Formation{
 
 var FormationsData = dataapi.NewSliceDataSource()
 
-func initFormatiotns() {
+func initFormations() {
 	println("init unit formations ")
 	for _, v := range Formations {
 		FormationsData.Append(v)

@@ -55,11 +55,12 @@ func main() {
 
 	unitA := re.NewSmallArmsUnit()
 	unitB := re.NewSmallArmsUnit()
+	sit := re.NewSmallArmsSituation([]*re.SmallArmsUnit{ unitA, unitB })
 
 	tabs := widget.NewTabContainer(
 		widget.NewTabItemWithIcon("Command", theme.HomeIcon(), welcomeScreen(a)),
 		widget.NewTabItemWithIcon("Movement", theme.ContentCopyIcon(), screens.WidgetScreen()),
-		widget.NewTabItemWithIcon("Ranged Fire", theme.ViewRefreshIcon(), ui.SmallArms(unitA, unitB)),
+		widget.NewTabItemWithIcon("Ranged Fire", theme.ViewRefreshIcon(), ui.SmallArms(sit)),
 		widget.NewTabItemWithIcon("Assaults", theme.DocumentCreateIcon(), screens.GraphicsScreen()),
 		widget.NewTabItemWithIcon("Morale", theme.ViewFullScreenIcon(), screens.DialogScreen(w)),
 	)

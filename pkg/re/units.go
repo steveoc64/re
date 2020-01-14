@@ -1,29 +1,34 @@
 package re
 
-import "fyne.io/fyne/dataapi"
+import (
+	"math/rand"
+	"time"
 
-type UnitStats struct {
-	ClassName string
+	"fyne.io/fyne/dataapi"
+)
+
+type ClassStats struct {
+	ClassName  string
 	SAModifier int
 }
 
-func (u UnitStats) String() string {
+func (u ClassStats) String() string {
 	return u.ClassName
 }
 
-func (u UnitStats) AddListener(func(dataapi.DataItem)) int {
+func (u ClassStats) AddListener(func(dataapi.DataItem)) int {
 	return 0
 }
 
-func (u UnitStats) DeleteListener(int) {
+func (u ClassStats) DeleteListener(int) {
 }
 
-var UnitClasses = []UnitStats{
+var UnitClasses = []ClassStats{
 	{"Rabble", -6},
 	{"Militia", -4},
 	{"Landwehr", -3},
 	{"Conscript", -2},
-	{"Regular", -1,},
+	{"Regular", -1},
 	{"Veteran", 0},
 	{"Crack Line", 2},
 	{"Elite", 4},
@@ -32,11 +37,25 @@ var UnitClasses = []UnitStats{
 	{"Old Guard", 10},
 }
 
+func GetClassStats(str string) (ClassStats,bool) {
+	for _,v := range UnitClasses {
+		if v.ClassName == str {
+			return v,true
+		}
+	}
+	return UnitClasses[0],false
+}
+
 var UnitClassesData = dataapi.NewSliceDataSource()
 
 func init() {
-	println("init unit clasess ")
-	for _,v := range UnitClasses {
+	rand.Seed(time.Now().UTC().UnixNano())
+	initUnits()
+	initFormations()
+}
+
+func initUnits() {
+	for _, v := range UnitClasses {
 		UnitClassesData.Append(v)
 	}
 }
