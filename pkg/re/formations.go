@@ -6,6 +6,7 @@ type Formation struct {
 	Name             string
 	SATargetModifier int
 	SAFireModifier   int
+	MaxFire          string
 }
 
 func GetFormation(name string) (Formation, bool) {
@@ -16,7 +17,7 @@ func GetFormation(name string) (Formation, bool) {
 			}
 		}
 	}
-	return Formation{"Unknown", 0, 0}, false
+	return Formation{"Unknown", 0, 0, "none"}, false
 }
 
 func (f Formation) String() string {
@@ -31,11 +32,11 @@ func (f Formation) DeleteListener(int) {
 }
 
 var Formations = dataapi.NewSliceDataSource([]dataapi.DataItem{
-	Formation{"Line", 0, 0},
-	Formation{"Mixed", 1, -1},
-	Formation{"Column", 3, -2},
-	Formation{"Closed Col", 5, -2},
-	Formation{"Square", 9, -4},
-	Formation{"Skirmish", -10, 0},
-	Formation{"OpenOrder", -6, 0},
+	Formation{"Line", 0, 0, "all"},
+	Formation{"Mixed", 1, -1, "half"},
+	Formation{"Column", 3, -2, "one"},
+	Formation{"Closed Col", 5, -2, "half"},
+	Formation{"Square", 9, -4, "one"},
+	Formation{"Skirmish", -10, 0, "all"},
+	Formation{"OpenOrder", -6, 0, "all"},
 })

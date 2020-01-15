@@ -3,9 +3,8 @@ package re
 import "fyne.io/fyne/dataapi"
 
 type AmmoState struct {
-	Name             string
-	SATargetModifier int
-	SAFireModifier   int
+	Name           string
+	SAFireModifier int
 }
 
 func GetAmmoState(name string) (AmmoState, bool) {
@@ -16,7 +15,7 @@ func GetAmmoState(name string) (AmmoState, bool) {
 			}
 		}
 	}
-	return AmmoState{"Unknown", 0, 0}, false
+	return AmmoState{"Unknown", 0}, false
 }
 
 func (a AmmoState) String() string {
@@ -31,8 +30,8 @@ func (a AmmoState) DeleteListener(int) {
 }
 
 var AmmoStates = dataapi.NewSliceDataSource([]dataapi.DataItem{
-	AmmoState{"FirstFire", 0, 5},
-	AmmoState{"Good", 0, 0},
-	AmmoState{"Depleted", 0, -6},
-	AmmoState{"Exhausted", 0, -10},
+	AmmoState{"FirstFire", 5},
+	AmmoState{"Good", 00},
+	AmmoState{"Depleted", -6},
+	AmmoState{"Exhausted", -10},
 })

@@ -19,16 +19,21 @@ type Unit struct {
 	Rifled          *dataapi.Bool
 	Formation       *dataapi.String
 	DieModDesc      *dataapi.String
-	Die1D10         *dataapi.Int
-	Die2D10         *dataapi.Int
-	DieD6           *dataapi.Int
-	DieTotal        *dataapi.Int
-	DieMods         *dataapi.Int
+	Die1D10         int
+	Die2D10         int
+	DieD6           int
+	DieTotal        int
+	DieMods         int
 	AmmoState       *dataapi.String
+	FireHitsAuto    int
+	FireHitsExtra   int
+	FireResults     *dataapi.String
 }
 
 func (s *Unit) Changed(str string) {
 	println("something changed", str)
+	s.FiringBases.SetInt(s.CloseOrderBases.Value())
+
 	s.CalcFF(0)
 	s.Situation.GetTarget(s).CalcFF(0)
 }
@@ -37,9 +42,20 @@ func (s *Unit) CalcFF(f float64) {
 	if s == nil {
 		return
 	}
-	if s.FiringBases.Value() > s.CloseOrderBases.Value() {
-		s.FiringBases.SetInt(s.CloseOrderBases.Value())
-
+	maxFiring := s.CloseOrderBases.Value()
+	if f, ok := GetFormation(s.Formation.String()); ok {
+		switch f.MaxFire {
+		//case "all":
+		case "one":
+			maxFiring = 1
+		case "half":
+			maxFiring = maxFiring / 2
+		case "none":
+			maxFiring = 0
+		}
+	}
+	if s.FiringBases.Value() > maxFiring {
+		s.FiringBases.SetInt(maxFiring)
 	}
 	desc := fmt.Sprintf("%d of %d Bases firing", s.FiringBases.Value(), s.CloseOrderBases.Value())
 	if s.SupportingBases.Value() > 0 {
@@ -77,29 +93,29 @@ func (s *Unit) calcDieMods() {
 	if a, ok := GetAmmoState(s.AmmoState.String()); ok {
 		dm += a.SAFireModifier
 	}
-	s.DieMods.SetInt(dm)
+	s.DieMods = dm
 	s.DieModDesc.SetString(fmt.Sprintf("%+d Die Mod", dm))
 }
 
 // Clear the rolled state
 func (s *Unit) Clear() {
-	s.Die1D10.SetInt(0)
-	s.Die2D10.SetInt(0)
-	s.DieD6.SetInt(0)
-	s.DieTotal.SetInt(0)
-	s.DieModDesc.SetString(fmt.Sprintf("%+d Die Mod", s.DieMods.Value()))
+	s.Die1D10 = 0
+	s.Die2D10 = 0
+	s.DieD6 = 0
+	s.DieTotal = 0
+	s.DieModDesc.SetString(fmt.Sprintf("%+d Die Mod", s.DieMods))
 }
 
 func (s *Unit) Roll() {
 	d1 := rand.Intn(10) + 1
 	d2 := rand.Intn(10) + 1
 	d3 := rand.Intn(6) + 1
-	dm := s.DieMods.Value()
+	dm := s.DieMods
 	dt := d1 + d2 + dm
-	s.Die1D10.SetInt(d1)
-	s.Die2D10.SetInt(d2)
-	s.DieD6.SetInt(d3)
-	s.DieTotal.SetInt(dt)
+	s.Die1D10 = d1
+	s.Die2D10 = d2
+	s.DieD6 = d3
+	s.DieTotal = dt
 	s.DieModDesc.SetString(fmt.Sprintf("Rolled %d+%d / %d with mods %+d = %d", d1, d2, d3, dm, dt))
 	ff := s.FireFactor.Value()
 
@@ -150,12 +166,8 @@ func NewSmallArmsUnit() *Unit {
 		Rifled:          dataapi.NewBool(false),
 		Formation:       dataapi.NewString("Line"),
 		DieModDesc:      dataapi.NewString(""),
-		Die1D10:         dataapi.NewInt(0),
-		Die2D10:         dataapi.NewInt(0),
-		DieD6:           dataapi.NewInt(0),
-		DieTotal:        dataapi.NewInt(0),
-		DieMods:         dataapi.NewInt(0),
 		AmmoState:       dataapi.NewString("Good"),
+		FireResults:     dataapi.NewString(""),
 	}
 	return s
 }
