@@ -27,12 +27,8 @@ type Unit struct {
 	AmmoState       *dataapi.String
 }
 
-// ClassChanged handler
-func (s *Unit) ClassChanged(str string) {
-	s.CalcFF(0.0)
-}
-
 func (s *Unit) Changed(str string) {
+	println("something changed", str)
 	s.CalcFF(0)
 	s.Situation.GetTarget(s).CalcFF(0)
 }
@@ -42,14 +38,14 @@ func (s *Unit) CalcFF(f float64) {
 		return
 	}
 	if s.FiringBases.Value() > s.CloseOrderBases.Value() {
-		s.FiringBases.SetInt(s.CloseOrderBases.Value(), 0)
+		s.FiringBases.SetInt(s.CloseOrderBases.Value())
 
 	}
 	desc := fmt.Sprintf("%d of %d Bases firing", s.FiringBases.Value(), s.CloseOrderBases.Value())
 	if s.SupportingBases.Value() > 0 {
 		desc = fmt.Sprintf("%s, plus %d supports", desc, s.SupportingBases.Value())
 	}
-	s.BasesDesc.Set(desc, 0)
+	s.BasesDesc.SetString(desc)
 
 	rangeFactor := 1.0
 	r := s.Situation.Range.Value()
@@ -61,7 +57,7 @@ func (s *Unit) CalcFF(f float64) {
 
 	ff := s.FiringBases.Value()*3 + s.SupportingBases.Value()
 	ff = int((float64(ff) / rangeFactor))
-	s.FireFactor.SetInt(ff, 0)
+	s.FireFactor.SetInt(ff)
 
 	s.calcDieMods()
 }
@@ -81,17 +77,17 @@ func (s *Unit) calcDieMods() {
 	if a, ok := GetAmmoState(s.AmmoState.String()); ok {
 		dm += a.SAFireModifier
 	}
-	s.DieMods.SetInt(dm, 0)
-	s.DieModDesc.Set(fmt.Sprintf("%+d Die Mod", dm), 0)
+	s.DieMods.SetInt(dm)
+	s.DieModDesc.SetString(fmt.Sprintf("%+d Die Mod", dm))
 }
 
 // Clear the rolled state
 func (s *Unit) Clear() {
-	s.Die1D10.SetInt(0, 0)
-	s.Die2D10.SetInt(0, 0)
-	s.DieD6.SetInt(0, 0)
-	s.DieTotal.SetInt(0, 0)
-	s.DieModDesc.Set(fmt.Sprintf("%+d Die Mod", s.DieMods.Value()), 0)
+	s.Die1D10.SetInt(0)
+	s.Die2D10.SetInt(0)
+	s.DieD6.SetInt(0)
+	s.DieTotal.SetInt(0)
+	s.DieModDesc.SetString(fmt.Sprintf("%+d Die Mod", s.DieMods.Value()))
 }
 
 func (s *Unit) Roll() {
@@ -100,11 +96,11 @@ func (s *Unit) Roll() {
 	d3 := rand.Intn(6) + 1
 	dm := s.DieMods.Value()
 	dt := d1 + d2 + dm
-	s.Die1D10.SetInt(d1, 0)
-	s.Die2D10.SetInt(d2, 0)
-	s.DieD6.SetInt(d3, 0)
-	s.DieTotal.SetInt(dt, 0)
-	s.DieModDesc.Set(fmt.Sprintf("Rolled %d+%d / %d with mods %+d = %d", d1, d2, d3, dm, dt), 0)
+	s.Die1D10.SetInt(d1)
+	s.Die2D10.SetInt(d2)
+	s.DieD6.SetInt(d3)
+	s.DieTotal.SetInt(dt)
+	s.DieModDesc.SetString(fmt.Sprintf("Rolled %d+%d / %d with mods %+d = %d", d1, d2, d3, dm, dt))
 	ff := s.FireFactor.Value()
 
 	band := int(dt / 4)

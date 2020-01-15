@@ -73,8 +73,7 @@ func SmallArms(sit *re.ContactSituation) fyne.CanvasObject {
 			widget.NewVBox(
 				widget.NewGroup("Defending Unit",
 					widget.NewForm(
-						widget.NewFormItem("Class", widget.NewSelect(nil, nil).
-							SetOnChanged(unitB.ClassChanged).
+						widget.NewFormItem("Class", widget.NewSelect(nil, unitB.Changed).
 							Source(re.UnitClasses).
 							Bind(unitB.Class)),
 						widget.NewFormItem("Current Hits", widget.NewEntry().
@@ -93,7 +92,7 @@ func SmallArms(sit *re.ContactSituation) fyne.CanvasObject {
 						widget.NewFormItem("Formation", widget.NewSelect(nil, unitB.Changed).
 							Source(re.Formations).
 							Bind(unitB.Formation)),
-						widget.NewFormItem("Ammo State", widget.NewSelect(nil, nil).
+						widget.NewFormItem("Ammo State", widget.NewSelect(nil, unitB.Changed).
 							Source(re.AmmoStates).
 							Bind(unitB.AmmoState)),
 						widget.NewFormItem("Fire Factor", widget.NewLabel("").
