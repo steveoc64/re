@@ -47,7 +47,7 @@ func welcomeScreen(a fyne.App) fyne.CanvasObject {
 }
 
 func main() {
-	a := app.NewWithID("io.warganing.re")
+	a := app.NewWithID("io.wargaming.re")
 	a.SetIcon(theme.FyneLogo())
 
 	w := a.NewWindow("Revolution and Empire Calculators")
@@ -55,7 +55,7 @@ func main() {
 
 	unitA := re.NewSmallArmsUnit()
 	unitB := re.NewSmallArmsUnit()
-	sit := re.NewSmallArmsSituation([]*re.SmallArmsUnit{ unitA, unitB })
+	sit := re.NewSmallArmsSituation([]*re.Unit{unitA, unitB})
 
 	tabs := widget.NewTabContainer(
 		widget.NewTabItemWithIcon("Command", theme.HomeIcon(), welcomeScreen(a)),
