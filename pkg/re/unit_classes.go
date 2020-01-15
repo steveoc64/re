@@ -1,6 +1,7 @@
 package re
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
 
@@ -23,10 +24,10 @@ func (u ClassStats) AddListener(func(dataapi.DataItem)) int {
 func (u ClassStats) DeleteListener(int) {
 }
 
-func GetClassStats(str string) (ClassStats, bool) {
+func GetClassStats(str fmt.Stringer) (ClassStats, bool) {
 	for _, v := range UnitClasses.Data {
 		if c, ok := v.(ClassStats); ok {
-			if c.ClassName == str {
+			if c.ClassName == str.String() {
 				return c, true
 			}
 		}

@@ -1,16 +1,19 @@
 package re
 
-import "fyne.io/fyne/dataapi"
+import (
+	"fmt"
+	"fyne.io/fyne/dataapi"
+)
 
 type AmmoState struct {
 	Name           string
 	SAFireModifier int
 }
 
-func GetAmmoState(name string) (AmmoState, bool) {
+func GetAmmoState(name fmt.Stringer) (AmmoState, bool) {
 	for _, v := range AmmoStates.Data {
 		if f, ok := v.(AmmoState); ok {
-			if f.Name == name {
+			if f.Name == name.String() {
 				return f, true
 			}
 		}
@@ -31,7 +34,7 @@ func (a AmmoState) DeleteListener(int) {
 
 var AmmoStates = dataapi.NewSliceDataSource([]dataapi.DataItem{
 	AmmoState{"FirstFire", 5},
-	AmmoState{"Good", 00},
+	AmmoState{"Good", 0},
 	AmmoState{"Depleted", -6},
 	AmmoState{"Exhausted", -10},
 })

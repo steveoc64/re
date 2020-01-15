@@ -1,11 +1,13 @@
 package re
 
-import "fyne.io/fyne/dataapi"
+import (
+	"fmt"
+	"fyne.io/fyne/dataapi"
+)
 
 type Weather struct {
-	Name             string
-	SAFireModifier   int
-	SATargetModifier int
+	Name           string
+	SAFireModifier int
 }
 
 func (w Weather) String() string {
@@ -19,23 +21,23 @@ func (w Weather) AddListener(func(dataapi.DataItem)) int {
 func (w Weather) DeleteListener(int) {
 }
 
-func GetWeather(str string) (Weather, bool) {
+func GetWeather(str fmt.Stringer) (Weather, bool) {
 	for _, v := range Weathers.Data {
 		if t, ok := v.(Weather); ok {
-			if t.Name == str {
+			if t.Name == str.String() {
 				return t, true
 			}
 		}
 	}
 	return Weather{
-		Name:             "Unknown",
-		SAFireModifier:   0,
-		SATargetModifier: 0,
+		Name:           "Unknown",
+		SAFireModifier: 0,
 	}, false
 }
 
 var Weathers = dataapi.NewSliceDataSource([]dataapi.DataItem{
-	Weather{Name: "Clear", SAFireModifier: 0, SATargetModifier: 0},
-	Weather{Name: "LightRain", SAFireModifier: 0, SATargetModifier: 0},
-	Weather{Name: "HeavyRain", SAFireModifier: 0, SATargetModifier: 0},
+	Weather{Name: "Clear", SAFireModifier: 1},
+	Weather{Name: "Damp", SAFireModifier: -1},
+	Weather{Name: "LightRain", SAFireModifier: -2},
+	Weather{Name: "HeavyRain", SAFireModifier: -5},
 })

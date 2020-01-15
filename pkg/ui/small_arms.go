@@ -17,10 +17,14 @@ func SmallArms(sit *re.ContactSituation) fyne.CanvasObject {
 			widget.NewForm(
 				widget.NewFormItem("Range", widget.NewSlider(0.0, 18.0).
 					SetOnChanged(func(f float64) {
-						unitA.CalcFF(0.0)
-						unitB.CalcFF(0.0)
+						sit.Changed("")
+						//unitA.CalcFF(0.0)
+						//unitB.CalcFF(0.0)
 					}).
 					Bind(sit.Range)),
+				widget.NewFormItem("Weather", widget.NewSelect(nil, sit.Changed).
+					Source(re.Weathers).
+					Bind(sit.Weather)),
 				widget.NewFormItem("", widget.NewCheck("Return Fire", nil).Bind(sit.ReturnFire)),
 				widget.NewFormItem("", widget.NewCheck("Enfilade", nil).Bind(sit.Enfilade)),
 				widget.NewFormItem("", widget.NewButtonWithIcon("Clear",
@@ -57,6 +61,9 @@ func SmallArms(sit *re.ContactSituation) fyne.CanvasObject {
 						widget.NewFormItem("Ammo State", widget.NewSelect(nil, unitA.Changed).
 							Source(re.AmmoStates).
 							Bind(unitA.AmmoState)),
+						widget.NewFormItem("Terrain", widget.NewSelect(nil, unitA.Changed).
+							Source(re.Terrains).
+							Bind(unitA.Terrain)),
 						widget.NewFormItem("Fire Factor", widget.NewLabel("").
 							Bind(unitA.FireFactor)),
 						widget.NewFormItem("Dice", widget.NewLabel("").
@@ -95,6 +102,9 @@ func SmallArms(sit *re.ContactSituation) fyne.CanvasObject {
 						widget.NewFormItem("Ammo State", widget.NewSelect(nil, unitB.Changed).
 							Source(re.AmmoStates).
 							Bind(unitB.AmmoState)),
+						widget.NewFormItem("Terrain", widget.NewSelect(nil, unitB.Changed).
+							Source(re.Terrains).
+							Bind(unitB.Terrain)),
 						widget.NewFormItem("Fire Factor", widget.NewLabel("").
 							Bind(unitB.FireFactor)),
 						widget.NewFormItem("Dice", widget.NewLabel("").

@@ -15,6 +15,7 @@ func NewSmallArmsSituation(units []*Unit) *ContactSituation {
 		Range:      dataapi.NewInt(0),
 		ReturnFire: dataapi.NewBool(true),
 		Enfilade:   dataapi.NewBool(false),
+		Weather:    dataapi.NewString("Clear"),
 		Units:      units,
 	}
 	for _, v := range units {
@@ -36,5 +37,11 @@ func (s *ContactSituation) GetTarget(unitA *Unit) *Unit {
 func (s *ContactSituation) Clear() {
 	for _, v := range s.Units {
 		v.Clear()
+	}
+}
+
+func (s *ContactSituation) Changed(string) {
+	for _, v := range s.Units {
+		v.Changed("")
 	}
 }

@@ -1,6 +1,7 @@
 package re
 
 import (
+	"fmt"
 	"fyne.io/fyne/dataapi"
 )
 
@@ -21,10 +22,10 @@ func (t Terrain) AddListener(func(dataapi.DataItem)) int {
 func (t Terrain) DeleteListener(int) {
 }
 
-func GetTerrain(str string) (Terrain, bool) {
+func GetTerrain(str fmt.Stringer) (Terrain, bool) {
 	for _, v := range Terrains.Data {
 		if t, ok := v.(Terrain); ok {
-			if t.Name == str {
+			if t.Name == str.String() {
 				return t, true
 			}
 		}
@@ -37,10 +38,10 @@ func GetTerrain(str string) (Terrain, bool) {
 }
 
 var Terrains = dataapi.NewSliceDataSource([]dataapi.DataItem{
-	Terrain{"Clear", 0, 1},
+	Terrain{"Open", 0, 1},
 	Terrain{"LightWoods", -1, -2},
-	Terrain{"Woods", -2, -2},
-	Terrain{"HeavyWoods", -3, -2},
+	Terrain{"Woods", -2, -4},
+	Terrain{"HeavyWoods", -3, -8},
 	Terrain{"LightCover", -1, -4},
 	Terrain{"Cover", -1, -8},
 	Terrain{"HeavyCover", 0, -12},

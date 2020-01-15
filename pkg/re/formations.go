@@ -1,6 +1,9 @@
 package re
 
-import "fyne.io/fyne/dataapi"
+import (
+	"fmt"
+	"fyne.io/fyne/dataapi"
+)
 
 type Formation struct {
 	Name             string
@@ -9,10 +12,10 @@ type Formation struct {
 	MaxFire          string
 }
 
-func GetFormation(name string) (Formation, bool) {
+func GetFormation(name fmt.Stringer) (Formation, bool) {
 	for _, v := range Formations.Data {
 		if f, ok := v.(Formation); ok {
-			if f.Name == name {
+			if f.Name == name.String() {
 				return f, true
 			}
 		}
@@ -33,9 +36,9 @@ func (f Formation) DeleteListener(int) {
 
 var Formations = dataapi.NewSliceDataSource([]dataapi.DataItem{
 	Formation{"Line", 0, 0, "all"},
-	Formation{"Mixed", 1, -1, "half"},
-	Formation{"Column", 3, -2, "one"},
-	Formation{"Closed Col", 5, -2, "half"},
+	Formation{"AttColumn", 1, -1, "halfup"},
+	Formation{"MarchColumn", 3, -2, "one"},
+	Formation{"ClosedColumn", 5, -2, "half"},
 	Formation{"Square", 9, -4, "one"},
 	Formation{"Skirmish", -10, 0, "all"},
 	Formation{"OpenOrder", -6, 0, "all"},
