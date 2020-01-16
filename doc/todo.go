@@ -3,12 +3,6 @@
 /*
 dataLists
 
-	- Terrain
-	- Cover
-	- Weather
-	- Morale State
-
-
 UI - ranged
 
 	- Grande Skirmish
@@ -34,4 +28,32 @@ UI - close action
 		- Just guns
 		- Infantry +
 		- Cavalry
+
+Command Options
+
+GT Move Options
+
+Tac Move Options
+
+	- Move table
+	- Phase marker
+	- Commander Actions
+		- Register of states
+		- Phasing player
+		- Reacting player
+
+ */
+
+// DONE
+
+/*
+dataLists
+
+	- Terrain
+	- Cover
+	- Weather
+	- Morale State
+	- Formations
+
+
  */

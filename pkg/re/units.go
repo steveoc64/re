@@ -33,6 +33,7 @@ type Unit struct {
 }
 
 func (s *Unit) Changed(str string) {
+	// TODO - dont change firing bases below every time - only do it when the formation changes
 	println("something changed", str)
 	s.FiringBases.SetInt(s.CloseOrderBases.Value())
 
