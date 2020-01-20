@@ -86,22 +86,25 @@ func (s *ContactSituation) FirefightCheck() {
 	mods := 0
 	var winner, loser *Unit
 	statusTitle := ""
+	victorTitle := ""
 
 	if attacker.FireHitsTotal > defender.FireHitsTotal {
 		winner = attacker
 		loser = defender
 		statusTitle = "Defender"
+		victorTitle = "Attacker"
 	} else if attacker.FireHitsTotal < defender.FireHitsTotal {
 		winner = defender
 		loser = attacker
 		statusTitle = "Attacker"
+		victorTitle = "Defender"
 	} else {
 		// inconclusive
 		s.Status.SetString(fmt.Sprintf("After %d minutes of firefight", s.FirefightRound*20))
 		return
 	}
 
-	mods = (loser.FireHitsTotal-winner.FireHitsTotal)*2
+	mods = (loser.FireHitsTotal - winner.FireHitsTotal) * 2
 	if loser.MoraleState.String() == "Shaken" {
 		mods += 2
 	}
@@ -109,32 +112,64 @@ func (s *ContactSituation) FirefightCheck() {
 		mods += 2
 	}
 	switch loser.AmmoState.String() {
-	case "Depleted","Exhausted":
+	case "Depleted", "Exhausted":
 		mods += 5
 	}
 
-	d1 := rand.Intn(10)+1
-	d2 := rand.Intn(10)+1
+	d1 := rand.Intn(10) + 1
+	d2 := rand.Intn(10) + 1
 	println("die roll", d1, d2, mods, d1+d2+mods)
-	v := d1+d2+mods
+	v := d1 + d2 + mods
 	switch {
 	case v >= 23:
 		loser.MoraleState.SetString("Broken")
-		s.SetStatus(loser)
+		if winner.MoraleState.String() == "Eager" {
+			s.Status.SetString(fmt.Sprintf("%s Breaks 8\" %s, %s Pursues with Bayonet", statusTitle, loser.MoraleState.String(), victorTitle))
+			winner.MoraleCheckResult.SetString("Eager Pursuit with Bayonet")
+			s.Resolved = true
+		} else {
+			s.SetStatus(loser)
+		}
 	case v >= 20:
-		loser.MoraleState.SetString("Disordered")
-		loser.MoraleCheckResult.SetString("Falls Back 5\" Disordered")
-		s.Status.SetString(fmt.Sprintf("%s Falls Back 5\" Disordered", statusTitle))
+		if loser.MoraleState.String() == "Steady" {
+			loser.MoraleState.SetString("Disordered")
+		}
+		loser.MoraleCheckResult.SetString("Falls Back 5\"")
+		if loser.MoraleState.String() == "Eager" {
+			loser.MoraleCheckResult.SetString("Desperate Charge with Bayonet !")
+			s.Status.SetString(fmt.Sprintf("%s Desperately Charges with Bayonet !", statusTitle))
+		} else {
+			if winner.MoraleState.String() == "Eager" && loser.MoraleState.String() != "Eager" {
+				s.Status.SetString(fmt.Sprintf("%s Falls Back 5\" %s, %s Pursues with Bayonet", statusTitle, loser.MoraleState.String(), victorTitle))
+				winner.MoraleCheckResult.SetString("Eager Pursuit with Bayonet")
+			} else {
+				s.Status.SetString(fmt.Sprintf("%s Falls Back 5\" %s", statusTitle, loser.MoraleState.String()))
+			}
+		}
 		s.Resolved = true
 	case v >= 17:
-		loser.MoraleState.SetString("Steady")
-		loser.MoraleCheckResult.SetString("Falls Back 5\"")
-		s.Status.SetString(fmt.Sprintf("%s Falls Back 5\" in Good Order", statusTitle))
-		s.Resolved = true
+		if loser.MoraleState.String() == "Eager" {
+			loser.MoraleCheckResult.SetString("Desperate Charge with Bayonet !")
+			s.Status.SetString(fmt.Sprintf("%s Desperately Charges Enemy with Bayonet !", statusTitle))
+		} else {
+			loser.MoraleCheckResult.SetString("Falls Back 5\"")
+			if winner.MoraleState.String() == "Eager" {
+				winner.MoraleCheckResult.SetString("Eager Charge with Bayonet !")
+				s.Status.SetString(fmt.Sprintf("%s Falls Back 5\" %s, %s Pursues with Bayonet !", statusTitle, loser.MoraleState.String(), victorTitle))
+			} else {
+				s.Status.SetString(fmt.Sprintf("%s Falls Back 5\" %s", statusTitle, loser.MoraleState.String()))
+			}
+			s.Resolved = true
+		}
 	case v >= 13:
 		if loser.Terrain.String() == "Open" {
-			loser.MoraleCheckResult.SetString("Falls Back 2\"")
-			s.Status.SetString(fmt.Sprintf("%s Falls Back 2\" in Good Order", statusTitle))
+			if loser.MoraleState.String() == "Eager" {
+				loser.MoraleCheckResult.SetString("Desperate Charge with Bayonet !")
+				s.Status.SetString(fmt.Sprintf("%s Desperately Charges Enemy with Bayonet !", statusTitle))
+			} else {
+				loser.MoraleCheckResult.SetString("Falls Back 2\"")
+				s.Status.SetString(fmt.Sprintf("%s Falls Back 2\" %s", statusTitle, loser.MoraleState.String()))
+			}
 		}
 	default:
 		s.Status.SetString(fmt.Sprintf("After %d minutes of firefight", s.FirefightRound*20))
