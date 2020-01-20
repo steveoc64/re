@@ -8,16 +8,6 @@ import (
 	"github.com/steveoc64/re/pkg/re"
 )
 
-package ui
-
-import (
-"fyne.io/fyne"
-"fyne.io/fyne/layout"
-"fyne.io/fyne/theme"
-"fyne.io/fyne/widget"
-"github.com/steveoc64/re/pkg/re"
-)
-
 func Artillery(sit *re.ContactSituation) fyne.CanvasObject {
 	unitA := sit.Units[0]
 	unitB := sit.Units[1]
@@ -65,7 +55,7 @@ func Artillery(sit *re.ContactSituation) fyne.CanvasObject {
 						widget.NewFormItem("Supporting Bases", widget.NewSlider(0.0, 6.0).
 							SetOnChanged(unitA.CalcFF).
 							Bind(unitA.SupportingBases)),
-						widget.NewFormItem("Formation", widget.NewSelect(nil, unitA.Changed).
+						widget.NewFormItem("Formation", widget.NewSelect(nil, unitA.FormationChanged).
 							Source(re.Formations).
 							Bind(unitA.Formation)),
 						widget.NewFormItem("Ammo State", widget.NewSelect(nil, unitA.Changed).
@@ -78,6 +68,8 @@ func Artillery(sit *re.ContactSituation) fyne.CanvasObject {
 							Bind(unitA.FireFactor)),
 						widget.NewFormItem("Dice", widget.NewLabel("").
 							Bind(unitA.DieModDesc)),
+						widget.NewFormItem("Result", widget.NewLabel("").
+							Bind(unitA.FireResults)),
 						widget.NewFormItem("", widget.NewButtonWithIcon("Fire",
 							theme.MailReplyIcon(),
 							func() {
@@ -106,7 +98,7 @@ func Artillery(sit *re.ContactSituation) fyne.CanvasObject {
 						widget.NewFormItem("Supporting Bases", widget.NewSlider(0.0, 6.0).
 							SetOnChanged(unitB.CalcFF).
 							Bind(unitB.SupportingBases)),
-						widget.NewFormItem("Formation", widget.NewSelect(nil, unitB.Changed).
+						widget.NewFormItem("Formation", widget.NewSelect(nil, unitB.FormationChanged).
 							Source(re.Formations).
 							Bind(unitB.Formation)),
 						widget.NewFormItem("Ammo State", widget.NewSelect(nil, unitB.Changed).
@@ -119,6 +111,8 @@ func Artillery(sit *re.ContactSituation) fyne.CanvasObject {
 							Bind(unitB.FireFactor)),
 						widget.NewFormItem("Dice", widget.NewLabel("").
 							Bind(unitB.DieModDesc)),
+						widget.NewFormItem("Result", widget.NewLabel("").
+							Bind(unitB.FireResults)),
 						widget.NewFormItem("", widget.NewButtonWithIcon("Fire",
 							theme.MailReplyIcon(),
 							func() {

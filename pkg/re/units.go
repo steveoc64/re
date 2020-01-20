@@ -33,12 +33,19 @@ type Unit struct {
 }
 
 func (s *Unit) Changed(str string) {
-	// TODO - dont change firing bases below every time - only do it when the formation changes
-	println("something changed", str)
-	s.FiringBases.SetInt(s.CloseOrderBases.Value())
-
 	s.CalcFF(0)
 	s.Situation.GetTarget(s).CalcFF(0)
+}
+
+func (s *Unit) HitsChanged(str string) {
+	s.CalcFF(0)
+	s.Situation.GetTarget(s).CalcFF(0)
+}
+
+func (s *Unit) FormationChanged(str string) {
+	println("Formation Changed")
+	s.FiringBases.SetInt(s.CloseOrderBases.Value())
+	s.Changed(str)
 }
 
 func (s *Unit) CalcFF(f float64) {
@@ -74,12 +81,18 @@ func (s *Unit) CalcFF(f float64) {
 		rangeFactor = 2.0 + (float64(r-12) / 3.0)
 	} else if r >= 6 { // 2-4 inches
 		rangeFactor = 1.0 + (float64(r-6) / 6.0)
+	} else if r == 0 {
+		rangeFactor = 0.6
 	} // else go at 100%
 
+	// Add supporting bases
 	ff := s.FiringBases.Value()*3 + s.SupportingBases.Value()
 	ff = int((float64(ff) / rangeFactor))
-	s.FireFactor.SetInt(ff)
 
+	// Take hits
+	ff = ff - s.Hits.Value()
+
+	s.FireFactor.SetInt(ff)
 	s.calcDieMods()
 }
 
@@ -152,7 +165,7 @@ func (s *Unit) Roll() {
 	ff := s.FireFactor.Value()
 
 	s.FireHitsAuto, s.FireHitsExtra = calcSAFire(dt, ff)
-	s.FireResults.SetString(fmt.Sprintf("(%d auto hits) + D6 = %d+ for extra hit", s.FireHitsAuto, s.FireHitsExtra))
+	s.FireResults.SetString(fmt.Sprintf("%d / %d+ Hits", s.FireHitsAuto, s.FireHitsExtra))
 
 	// Ammo depletion ?
 	switch s.AmmoState.String() {
@@ -188,5 +201,9 @@ func NewSmallArmsUnit() *Unit {
 		FireResults:     dataapi.NewString(""),
 		Terrain:         dataapi.NewString("Open"),
 	}
+	s.Hits.AddListener(func(item dataapi.DataItem) {
+		println("hits has apparently changed", item.String())
+		s.CalcFF(0)
+	})
 	return s
 }

@@ -27,7 +27,7 @@ func SmallArms(sit *re.ContactSituation) fyne.CanvasObject {
 					Bind(sit.Weather)),
 				widget.NewFormItem("", widget.NewCheck("Return Fire", nil).Bind(sit.ReturnFire)),
 				widget.NewFormItem("", widget.NewCheck("Enfilade", nil).Bind(sit.Enfilade)),
-				widget.NewFormItem("", widget.NewButtonWithIcon("Clear",
+				widget.NewFormItem("", widget.NewButtonWithIcon("Reset",
 					theme.MailReplyIcon(),
 					func() {
 						sit.Clear()
@@ -55,7 +55,7 @@ func SmallArms(sit *re.ContactSituation) fyne.CanvasObject {
 						widget.NewFormItem("Supporting Bases", widget.NewSlider(0.0, 6.0).
 							SetOnChanged(unitA.CalcFF).
 							Bind(unitA.SupportingBases)),
-						widget.NewFormItem("Formation", widget.NewSelect(nil, unitA.Changed).
+						widget.NewFormItem("Formation", widget.NewSelect(nil, unitA.FormationChanged).
 							Source(re.Formations).
 							Bind(unitA.Formation)),
 						widget.NewFormItem("Ammo State", widget.NewSelect(nil, unitA.Changed).
@@ -66,8 +66,10 @@ func SmallArms(sit *re.ContactSituation) fyne.CanvasObject {
 							Bind(unitA.Terrain)),
 						widget.NewFormItem("Fire Factor", widget.NewLabel("").
 							Bind(unitA.FireFactor)),
-						widget.NewFormItem("Dice", widget.NewLabel("").
+						widget.NewFormItem("Mods", widget.NewLabel("").
 							Bind(unitA.DieModDesc)),
+						widget.NewFormItem("Result", widget.NewLabel("").
+							Bind(unitA.FireResults)),
 						widget.NewFormItem("", widget.NewButtonWithIcon("Fire",
 							theme.MailReplyIcon(),
 							func() {
@@ -96,7 +98,7 @@ func SmallArms(sit *re.ContactSituation) fyne.CanvasObject {
 						widget.NewFormItem("Supporting Bases", widget.NewSlider(0.0, 6.0).
 							SetOnChanged(unitB.CalcFF).
 							Bind(unitB.SupportingBases)),
-						widget.NewFormItem("Formation", widget.NewSelect(nil, unitB.Changed).
+						widget.NewFormItem("Formation", widget.NewSelect(nil, unitB.FormationChanged).
 							Source(re.Formations).
 							Bind(unitB.Formation)),
 						widget.NewFormItem("Ammo State", widget.NewSelect(nil, unitB.Changed).
@@ -107,8 +109,10 @@ func SmallArms(sit *re.ContactSituation) fyne.CanvasObject {
 							Bind(unitB.Terrain)),
 						widget.NewFormItem("Fire Factor", widget.NewLabel("").
 							Bind(unitB.FireFactor)),
-						widget.NewFormItem("Dice", widget.NewLabel("").
+						widget.NewFormItem("Mods", widget.NewLabel("").
 							Bind(unitB.DieModDesc)),
+						widget.NewFormItem("Result", widget.NewLabel("").
+							Bind(unitB.FireResults)),
 						widget.NewFormItem("", widget.NewButtonWithIcon("Fire",
 							theme.MailReplyIcon(),
 							func() {

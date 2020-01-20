@@ -8,16 +8,6 @@ import (
 	"github.com/steveoc64/re/pkg/re"
 )
 
-package ui
-
-import (
-"fyne.io/fyne"
-"fyne.io/fyne/layout"
-"fyne.io/fyne/theme"
-"fyne.io/fyne/widget"
-"github.com/steveoc64/re/pkg/re"
-)
-
 func Skirmish(sit *re.ContactSituation) fyne.CanvasObject {
 	unitA := sit.Units[0]
 	unitB := sit.Units[1]

@@ -60,9 +60,12 @@ func main() {
 	tabs := widget.NewTabContainer(
 		widget.NewTabItemWithIcon("Command", theme.HomeIcon(), welcomeScreen(a)),
 		widget.NewTabItemWithIcon("Movement", theme.ContentCopyIcon(), screens.WidgetScreen()),
-		widget.NewTabItemWithIcon("Ranged Fire", theme.ViewRefreshIcon(), ui.SmallArms(sit)),
-		widget.NewTabItemWithIcon("Assaults", theme.DocumentCreateIcon(), screens.GraphicsScreen()),
-		widget.NewTabItemWithIcon("Morale", theme.ViewFullScreenIcon(), screens.DialogScreen(w)),
+		widget.NewTabItemWithIcon("Skirmish Attack", theme.ViewRefreshIcon(), ui.SmallArms(sit)),
+		widget.NewTabItemWithIcon("Musket Fire", theme.ViewRefreshIcon(), ui.SmallArms(sit)),
+		widget.NewTabItemWithIcon("Artillery Bombardment", theme.ViewRefreshIcon(), ui.SmallArms(sit)),
+		widget.NewTabItemWithIcon("Bayonet Assault", theme.DocumentCreateIcon(), screens.GraphicsScreen()),
+		widget.NewTabItemWithIcon("Cavalry Charge", theme.DocumentCreateIcon(), screens.GraphicsScreen()),
+		widget.NewTabItemWithIcon("Morale and Fatigue", theme.ViewFullScreenIcon(), screens.DialogScreen(w)),
 	)
 	tabs.SetTabLocation(widget.TabLocationLeading)
 	tabs.SelectTabIndex(a.Preferences().Int(preferenceCurrentTab))
