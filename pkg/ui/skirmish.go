@@ -71,7 +71,7 @@ func Skirmish(sit *re.ContactSituation) fyne.CanvasObject {
 						widget.NewFormItem("", widget.NewButtonWithIcon("Fire",
 							theme.MailReplyIcon(),
 							func() {
-								unitA.Roll()
+								unitA.Fire()
 							},
 						)),
 					),
@@ -112,7 +112,7 @@ func Skirmish(sit *re.ContactSituation) fyne.CanvasObject {
 						widget.NewFormItem("", widget.NewButtonWithIcon("Fire",
 							theme.MailReplyIcon(),
 							func() {
-								unitB.Roll()
+								unitB.Fire()
 							},
 						)),
 					),

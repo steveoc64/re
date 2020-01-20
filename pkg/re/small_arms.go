@@ -46,10 +46,6 @@ func calcSAFire(dieTotal, fireFactor int) (int, int) {
 			row = k
 		}
 	}
-	println("result: row", row, "col", col)
 	offset := len(saCols)*row + col
-	println("offset", offset)
-	println("auto", saAuto[offset])
-	println("extra", saExtra[offset])
 	return saAuto[offset], saExtra[offset]
 }

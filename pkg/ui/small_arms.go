@@ -26,7 +26,8 @@ func SmallArms(sit *re.ContactSituation) fyne.CanvasObject {
 					Source(re.Weathers).
 					Bind(sit.Weather)),
 				widget.NewFormItem("", widget.NewCheck("Return Fire", nil).Bind(sit.ReturnFire)),
-				widget.NewFormItem("", widget.NewCheck("Enfilade", nil).Bind(sit.Enfilade)),
+				widget.NewFormItem("", widget.NewCheck("Auto Apply Dice Rolls", nil).Bind(sit.AutoDice)),
+				widget.NewFormItem("", widget.NewLabel("").Bind(sit.Status)),
 				widget.NewFormItem("", widget.NewButtonWithIcon("Reset",
 					theme.MailReplyIcon(),
 					func() {
@@ -42,18 +43,18 @@ func SmallArms(sit *re.ContactSituation) fyne.CanvasObject {
 						widget.NewFormItem("Class", widget.NewSelect(nil, unitA.Changed).
 							Source(re.UnitClasses).
 							Bind(unitA.Class)),
+						widget.NewFormItem("Morale", widget.NewSelect(nil, unitA.Changed).
+							Source(re.MoraleStates).
+							Bind(unitA.MoraleState)),
 						widget.NewFormItem("Current Hits", widget.NewEntry().
 							Bind(unitA.Hits)),
 						widget.NewFormItem("Status", widget.NewLabel("").
 							Bind(unitA.BasesDesc)),
 						widget.NewFormItem("Close Order Bases", widget.NewSlider(1.0, 6.0).
-							SetOnChanged(unitA.CalcFF).
 							Bind(unitA.CloseOrderBases)),
 						widget.NewFormItem("Firing Bases", widget.NewSlider(1.0, 6.0).
-							SetOnChanged(unitA.CalcFF).
 							Bind(unitA.FiringBases)),
 						widget.NewFormItem("Supporting Bases", widget.NewSlider(0.0, 6.0).
-							SetOnChanged(unitA.CalcFF).
 							Bind(unitA.SupportingBases)),
 						widget.NewFormItem("Formation", widget.NewSelect(nil, unitA.FormationChanged).
 							Source(re.Formations).
@@ -64,16 +65,24 @@ func SmallArms(sit *re.ContactSituation) fyne.CanvasObject {
 						widget.NewFormItem("Terrain", widget.NewSelect(nil, unitA.Changed).
 							Source(re.Terrains).
 							Bind(unitA.Terrain)),
+						widget.NewFormItem("", widget.NewCheck("Enfilade", nil).
+							Bind(unitA.Enfilade)),
 						widget.NewFormItem("Fire Factor", widget.NewLabel("").
 							Bind(unitA.FireFactor)),
 						widget.NewFormItem("Mods", widget.NewLabel("").
 							Bind(unitA.DieModDesc)),
+						widget.NewFormItem("Rolls", widget.NewLabel("").
+							Bind(unitA.FireRolls)),
 						widget.NewFormItem("Result", widget.NewLabel("").
 							Bind(unitA.FireResults)),
+						widget.NewFormItem("Damage", widget.NewLabel("").
+							Bind(unitA.FireTotal)),
+						widget.NewFormItem("Morale Check", widget.NewLabel("").
+							Bind(unitA.MoraleCheckResult)),
 						widget.NewFormItem("", widget.NewButtonWithIcon("Fire",
 							theme.MailReplyIcon(),
 							func() {
-								unitA.Roll()
+								unitA.Fire()
 							},
 						)),
 					),
@@ -85,18 +94,18 @@ func SmallArms(sit *re.ContactSituation) fyne.CanvasObject {
 						widget.NewFormItem("Class", widget.NewSelect(nil, unitB.Changed).
 							Source(re.UnitClasses).
 							Bind(unitB.Class)),
+						widget.NewFormItem("Morale", widget.NewSelect(nil, unitB.Changed).
+							Source(re.MoraleStates).
+							Bind(unitB.MoraleState)),
 						widget.NewFormItem("Current Hits", widget.NewEntry().
 							Bind(unitB.Hits)),
 						widget.NewFormItem("Status", widget.NewLabel("").
 							Bind(unitB.BasesDesc)),
 						widget.NewFormItem("Close Order Bases", widget.NewSlider(1.0, 6.0).
-							SetOnChanged(unitB.CalcFF).
 							Bind(unitB.CloseOrderBases)),
 						widget.NewFormItem("Firing Bases", widget.NewSlider(1.0, 6.0).
-							SetOnChanged(unitB.CalcFF).
 							Bind(unitB.FiringBases)),
 						widget.NewFormItem("Supporting Bases", widget.NewSlider(0.0, 6.0).
-							SetOnChanged(unitB.CalcFF).
 							Bind(unitB.SupportingBases)),
 						widget.NewFormItem("Formation", widget.NewSelect(nil, unitB.FormationChanged).
 							Source(re.Formations).
@@ -107,16 +116,25 @@ func SmallArms(sit *re.ContactSituation) fyne.CanvasObject {
 						widget.NewFormItem("Terrain", widget.NewSelect(nil, unitB.Changed).
 							Source(re.Terrains).
 							Bind(unitB.Terrain)),
+						widget.NewFormItem("", widget.NewCheck("Enfilade", nil).
+							Bind(unitB.Enfilade)),
 						widget.NewFormItem("Fire Factor", widget.NewLabel("").
 							Bind(unitB.FireFactor)),
 						widget.NewFormItem("Mods", widget.NewLabel("").
 							Bind(unitB.DieModDesc)),
+						widget.NewFormItem("Rolls", widget.NewLabel("").
+							Bind(unitB.FireRolls)),
 						widget.NewFormItem("Result", widget.NewLabel("").
 							Bind(unitB.FireResults)),
+						widget.NewFormItem("Damage", widget.NewLabel("").
+							Bind(unitB.FireTotal)),
+						widget.NewFormItem("Morale Check", widget.NewLabel("").
+							Bind(unitB.MoraleCheckResult)),
 						widget.NewFormItem("", widget.NewButtonWithIcon("Fire",
 							theme.MailReplyIcon(),
 							func() {
-								unitB.Roll()
+								unitB.Fire()
+								sit.FirefightCheck()
 							},
 						)),
 					),

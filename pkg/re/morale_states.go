@@ -8,6 +8,7 @@ import (
 type MoraleState struct {
 	Name           string
 	SAFireModifier int
+	MoraleMod int
 }
 
 func (m MoraleState) String() string {
@@ -36,9 +37,9 @@ func GetMoraleState(str fmt.Stringer) (MoraleState, bool) {
 }
 
 var MoraleStates = dataapi.NewSliceDataSource([]dataapi.DataItem{
-	MoraleState{"Eager", 0},
-	MoraleState{"Steady", 0},
-	MoraleState{"Disordered", -5},
-	MoraleState{"Shaken", -10},
-	MoraleState{"Broken", -15},
+	MoraleState{"Eager", 0, 2},
+	MoraleState{"Steady", 0, 0},
+	MoraleState{"Disordered", -5, -2},
+	MoraleState{"Shaken", -10, -4},
+	MoraleState{"Broken", -15, -8},
 })

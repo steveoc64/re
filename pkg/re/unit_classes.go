@@ -10,7 +10,10 @@ import (
 
 type ClassStats struct {
 	ClassName  string
+	ID int
 	SAModifier int
+	MoraleCheck int
+	MoraleLineMod int
 }
 
 func (u ClassStats) String() string {
@@ -39,17 +42,17 @@ func GetClassStats(str fmt.Stringer) (ClassStats, bool) {
 }
 
 var UnitClasses = dataapi.NewSliceDataSource([]dataapi.DataItem{
-	ClassStats{"Rabble", -6},
-	ClassStats{"Militia", -4},
-	ClassStats{"Landwehr", -3},
-	ClassStats{"Conscript", -2},
-	ClassStats{"Regular", -1},
-	ClassStats{"Veteran", 0},
-	ClassStats{"Crack Line", 2},
-	ClassStats{"Elite", 4},
-	ClassStats{"Grenadier", 6},
-	ClassStats{"Guard", 8},
-	ClassStats{"Old Guard", 10},
+	ClassStats{"Rabble",1, -6, 9, -3},
+	ClassStats{"Militia",2, -4, 7, -3},
+	ClassStats{"Landwehr",3, -3, 6, -3},
+	ClassStats{"Conscript",4, -2, 5, -1},
+	ClassStats{"Regular",5, -1, 4, -1},
+	ClassStats{"Veteran",6, 0, 3, 0},
+	ClassStats{"Crack Line",7, 2, 2, 0},
+	ClassStats{"Elite",8, 4, 1, 0},
+	ClassStats{"Grenadier",9, 6, 0, 0},
+	ClassStats{"Guard",10, 8, -1, 0},
+	ClassStats{"Old Guard",11, 10, -3, 0},
 })
 
 func init() {

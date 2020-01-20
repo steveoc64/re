@@ -60,9 +60,9 @@ func main() {
 	tabs := widget.NewTabContainer(
 		widget.NewTabItemWithIcon("Command", theme.HomeIcon(), welcomeScreen(a)),
 		widget.NewTabItemWithIcon("Movement", theme.ContentCopyIcon(), screens.WidgetScreen()),
-		widget.NewTabItemWithIcon("Skirmish Attack", theme.ViewRefreshIcon(), ui.SmallArms(sit)),
+		widget.NewTabItemWithIcon("Skirmish Attack", theme.ViewRefreshIcon(), ui.Skirmish(sit)),
 		widget.NewTabItemWithIcon("Musket Fire", theme.ViewRefreshIcon(), ui.SmallArms(sit)),
-		widget.NewTabItemWithIcon("Artillery Bombardment", theme.ViewRefreshIcon(), ui.SmallArms(sit)),
+		widget.NewTabItemWithIcon("Artillery Bombardment", theme.ViewRefreshIcon(), ui.Artillery(sit)),
 		widget.NewTabItemWithIcon("Bayonet Assault", theme.DocumentCreateIcon(), screens.GraphicsScreen()),
 		widget.NewTabItemWithIcon("Cavalry Charge", theme.DocumentCreateIcon(), screens.GraphicsScreen()),
 		widget.NewTabItemWithIcon("Morale and Fatigue", theme.ViewFullScreenIcon(), screens.DialogScreen(w)),
