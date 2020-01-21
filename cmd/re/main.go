@@ -1,15 +1,14 @@
 package main
 
 import (
-	"github.com/steveoc64/re/pkg/re"
-	"github.com/steveoc64/re/pkg/ui"
 	"net/url"
+
+	"github.com/steveoc64/re/pkg/ui"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/app"
 	"fyne.io/fyne/canvas"
 	"fyne.io/fyne/cmd/fyne_demo/data"
-	"fyne.io/fyne/cmd/fyne_demo/screens"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
@@ -53,19 +52,16 @@ func main() {
 	w := a.NewWindow("Revolution and Empire Calculators")
 	w.SetMaster()
 
-	unitA := re.NewSmallArmsUnit()
-	unitB := re.NewSmallArmsUnit()
-	sit := re.NewSmallArmsSituation([]*re.Unit{unitA, unitB})
+	screens := ui.NewInfantryScreens()
 
 	tabs := widget.NewTabContainer(
 		widget.NewTabItemWithIcon("Command", theme.HomeIcon(), welcomeScreen(a)),
-		widget.NewTabItemWithIcon("Movement", theme.ContentCopyIcon(), screens.WidgetScreen()),
-		widget.NewTabItemWithIcon("Skirmish Attack", theme.ViewRefreshIcon(), ui.Skirmish(sit)),
-		widget.NewTabItemWithIcon("Musket Fire", theme.ViewRefreshIcon(), ui.SmallArms(sit)),
-		widget.NewTabItemWithIcon("Artillery Bombardment", theme.ViewRefreshIcon(), ui.Artillery(sit)),
-		widget.NewTabItemWithIcon("Bayonet Assault", theme.DocumentCreateIcon(), screens.GraphicsScreen()),
-		widget.NewTabItemWithIcon("Cavalry Charge", theme.DocumentCreateIcon(), screens.GraphicsScreen()),
-		widget.NewTabItemWithIcon("Morale and Fatigue", theme.ViewFullScreenIcon(), screens.DialogScreen(w)),
+		widget.NewTabItemWithIcon("Movement", theme.ContentCopyIcon(), welcomeScreen(a)),
+		widget.NewTabItemWithIcon("Skirmishers", theme.ViewRefreshIcon(), ui.Skirmish()),
+		widget.NewTabItemWithIcon("Infantry", theme.ViewRefreshIcon(), screens.Canvas()),
+		widget.NewTabItemWithIcon("Artillery", theme.ViewRefreshIcon(), ui.Artillery()),
+		widget.NewTabItemWithIcon("Cavalry", theme.DocumentCreateIcon(), ui.CavalryVCavalry()),
+		widget.NewTabItemWithIcon("Morale and Fatigue", theme.ViewFullScreenIcon(), welcomeScreen(a)),
 	)
 	tabs.SetTabLocation(widget.TabLocationLeading)
 	tabs.SelectTabIndex(a.Preferences().Int(preferenceCurrentTab))

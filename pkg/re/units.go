@@ -37,6 +37,34 @@ type Unit struct {
 	MoraleCheckResult *dataapi.String
 }
 
+func (s *Unit) Copy(from *Unit) {
+	s.CloseOrderBases.SetInt(from.CloseOrderBases.Value())
+	s.FiringBases.SetInt(from.FiringBases.Value())
+	s.SupportingBases.SetInt(from.SupportingBases.Value())
+	s.BasesDesc.SetString(from.BasesDesc.String())
+	s.FireFactor.SetInt(from.FireFactor.Value())
+	s.Hits.SetInt(from.Hits.Value())
+	s.Class.SetString(from.Class.String())
+	s.Rifled.SetBool(from.Rifled.Value())
+	s.Formation.SetString(from.Formation.String())
+	s.DieModDesc.SetString(from.DieModDesc.String())
+	s.Enfilade.SetBool(from.Enfilade.Value())
+	s.Die1D10 = from.Die1D10
+	s.Die2D10 = from.Die2D10
+	s.DieD6 = from.DieD6
+	s.DieTotal = from.DieTotal
+	s.AmmoState.SetString(from.AmmoState.String())
+	s.FireHitsAuto = from.FireHitsAuto
+	s.FireHitsExtra = from.FireHitsExtra
+	s.FireHitsTotal = from.FireHitsTotal
+	s.FireResults.SetString(from.FireResults.String())
+	s.FireRolls.SetString(from.FireRolls.String())
+	s.FireTotal.SetString(from.FireTotal.String())
+	s.Terrain.SetString(from.Terrain.String())
+	s.MoraleState.SetString(from.MoraleState.String())
+	s.MoraleCheckResult.SetString(from.MoraleCheckResult.String())
+}
+
 func (s *Unit) Changed(str string) {
 	s.CalcFF(0)
 	s.Situation.GetTarget(s).CalcFF(0)
@@ -294,7 +322,7 @@ func (s *Unit) MoraleCheck() bool {
 
 		d1 := rand.Intn(10) + 1
 		d2 := rand.Intn(10) + 1
-		println("die rolls", d1, d2, "=", d1+d2, "modded to", d1+d2+mods, "fails on", m.MoraleCheck)
+		println("die rolls", d1, d2, "=", d1+d2, "modded to", d1+d2+mods, "fails on", m.MoraleCheck,"or less")
 		if d1+d2+mods <= m.MoraleCheck {
 			s.MoraleState.SetString("Broken")
 			s.MoraleCheckResult.SetString(fmt.Sprintf("Breaks with %d%% Losses", lossPercent))
@@ -308,7 +336,7 @@ func (s *Unit) MoraleCheck() bool {
 	return false
 }
 
-func NewSmallArmsUnit() *Unit {
+func NewUnit() *Unit {
 	s := &Unit{
 		CloseOrderBases:   dataapi.NewInt(4),
 		FiringBases:       dataapi.NewInt(4),

@@ -40,6 +40,6 @@ var Formations = dataapi.NewSliceDataSource([]dataapi.DataItem{
 	Formation{"MarchColumn", 3, -2, "one"},
 	Formation{"ClosedColumn", 5, -2, "half"},
 	Formation{"Square", 9, -4, "one"},
-	Formation{"Skirmish", -10, 0, "all"},
-	Formation{"OpenOrder", -6, 0, "all"},
+	Formation{"Skirmish", -10, 0, "none"},
+	Formation{"OpenOrder", -6, 0, "one"},
 })

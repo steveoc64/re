@@ -16,10 +16,26 @@ type ContactSituation struct {
 	Status         *dataapi.String
 	FirefightRound int
 	Resolved       bool
-	Units          []*Unit
+	TotalLosses    int
+	Attacker       *Unit
+	Defender       *Unit
 }
 
-func NewSmallArmsSituation(units []*Unit) *ContactSituation {
+func (s *ContactSituation) Copy(sit *ContactSituation) {
+	s.Range.SetInt(sit.Range.Value())
+	s.ReturnFire.SetBool(sit.ReturnFire.Value())
+	s.Enfilade.SetBool(sit.Enfilade.Value())
+	s.AutoDice.SetBool(sit.AutoDice.Value())
+	s.Weather.SetString(sit.Weather.String())
+	s.Status.SetString(sit.Status.String())
+	s.FirefightRound = sit.FirefightRound
+	s.Resolved = sit.Resolved
+	s.Attacker.Copy(sit.Attacker)
+	s.Defender.Copy(sit.Defender)
+	s.TotalLosses = sit.TotalLosses
+}
+
+func NewSmallArmsSituation() *ContactSituation {
 	s := &ContactSituation{
 		Range:          dataapi.NewInt(2),
 		ReturnFire:     dataapi.NewBool(true),
@@ -27,22 +43,25 @@ func NewSmallArmsSituation(units []*Unit) *ContactSituation {
 		AutoDice:       dataapi.NewBool(true),
 		Weather:        dataapi.NewString("Clear"),
 		Status:         dataapi.NewString(""),
-		Units:          units,
+		Attacker:       NewUnit(),
+		Defender:       NewUnit(),
 		FirefightRound: 0,
 		Resolved:       false,
+		TotalLosses:    0,
 	}
-	for _, v := range units {
-		v.Situation = s
-		v.CalcFF(0)
-	}
+	s.Attacker.Situation = s
+	s.Defender.Situation = s
+	s.Attacker.CalcFF(0)
+	s.Defender.CalcFF(0)
 	return s
 }
 
 func (s *ContactSituation) GetTarget(unitA *Unit) *Unit {
-	for _, v := range s.Units {
-		if v != unitA {
-			return v
-		}
+	if unitA == s.Attacker {
+		return s.Defender
+	}
+	if unitA == s.Defender {
+		return s.Attacker
 	}
 	return nil
 }
@@ -54,20 +73,19 @@ func (s *ContactSituation) Clear() {
 	s.Status.SetString("")
 	s.FirefightRound = 0
 	s.Resolved = false
-	for _, v := range s.Units {
-		v.Clear()
-	}
+	s.Attacker.Clear()
+	s.Defender.Clear()
+	s.TotalLosses = 0
 }
 
 func (s *ContactSituation) Changed(string) {
-	for _, v := range s.Units {
-		v.Changed("")
-	}
+	s.Attacker.Changed("")
+	s.Defender.Changed("")
 }
 
 func (s *ContactSituation) SetStatus(u *Unit) {
 	uu := "Attacker"
-	if u != s.Units[0] {
+	if u != s.Attacker {
 		uu = "Defender"
 	}
 	s.Status.SetString(fmt.Sprintf("%s %s", uu, u.MoraleCheckResult.String()))
@@ -80,27 +98,39 @@ func (s *ContactSituation) FirefightCheck() {
 	}
 	println("Firefight Check")
 
-	attacker := s.Units[0]
-	defender := s.Units[1]
+	attacker := s.Attacker
+	defender := s.Defender
 	s.FirefightRound++
 	mods := 0
 	var winner, loser *Unit
 	statusTitle := ""
 	victorTitle := ""
+	aHits := attacker.FireHitsTotal - attacker.SupportingBases.Value()
+	dHits := defender.FireHitsTotal - defender.SupportingBases.Value()
+	if aHits < 0 {
+		s.TotalLosses = attacker.FireHitsTotal * 20
+		aHits = 0
+	}
+	if dHits < 0 {
+		s.TotalLosses += defender.FireHitsTotal * 20
+		dHits = 0
+	}
+	s.TotalLosses = s.TotalLosses + 60*aHits + 60*dHits
+	statusString := fmt.Sprintf("After %d minutes and %d men down", s.FirefightRound*20, s.TotalLosses)
 
-	if attacker.FireHitsTotal > defender.FireHitsTotal {
+	if aHits > dHits {
 		winner = attacker
 		loser = defender
 		statusTitle = "Defender"
 		victorTitle = "Attacker"
-	} else if attacker.FireHitsTotal < defender.FireHitsTotal {
+	} else if aHits < dHits {
 		winner = defender
 		loser = attacker
 		statusTitle = "Attacker"
 		victorTitle = "Defender"
 	} else {
 		// inconclusive
-		s.Status.SetString(fmt.Sprintf("After %d minutes of firefight", s.FirefightRound*20))
+		s.Status.SetString(fmt.Sprintf("%s, firefight stalemate", statusString))
 		return
 	}
 
@@ -124,7 +154,7 @@ func (s *ContactSituation) FirefightCheck() {
 	case v >= 23:
 		loser.MoraleState.SetString("Broken")
 		if winner.MoraleState.String() == "Eager" {
-			s.Status.SetString(fmt.Sprintf("%s Breaks 8\" %s, %s Pursues with Bayonet", statusTitle, loser.MoraleState.String(), victorTitle))
+			s.Status.SetString(fmt.Sprintf("%s, %s Breaks 8\" %s, %s Pursues with Bayonet", statusString, statusTitle, loser.MoraleState.String(), victorTitle))
 			winner.MoraleCheckResult.SetString("Eager Pursuit with Bayonet")
 			s.Resolved = true
 		} else {
@@ -137,27 +167,27 @@ func (s *ContactSituation) FirefightCheck() {
 		loser.MoraleCheckResult.SetString("Falls Back 5\"")
 		if loser.MoraleState.String() == "Eager" {
 			loser.MoraleCheckResult.SetString("Desperate Charge with Bayonet !")
-			s.Status.SetString(fmt.Sprintf("%s Desperately Charges with Bayonet !", statusTitle))
+			s.Status.SetString(fmt.Sprintf("%s, %s Desperately Charges with Bayonet !", statusString, statusTitle))
 		} else {
 			if winner.MoraleState.String() == "Eager" && loser.MoraleState.String() != "Eager" {
 				s.Status.SetString(fmt.Sprintf("%s Falls Back 5\" %s, %s Pursues with Bayonet", statusTitle, loser.MoraleState.String(), victorTitle))
-				winner.MoraleCheckResult.SetString("Eager Pursuit with Bayonet")
+				winner.MoraleCheckResult.SetString(fmt.Sprintf("%s, Eager Pursuit with Bayonet", statusString))
 			} else {
-				s.Status.SetString(fmt.Sprintf("%s Falls Back 5\" %s", statusTitle, loser.MoraleState.String()))
+				s.Status.SetString(fmt.Sprintf("%s, %s Falls Back 5\" %s", statusString, statusTitle, loser.MoraleState.String()))
 			}
 		}
 		s.Resolved = true
 	case v >= 17:
 		if loser.MoraleState.String() == "Eager" {
 			loser.MoraleCheckResult.SetString("Desperate Charge with Bayonet !")
-			s.Status.SetString(fmt.Sprintf("%s Desperately Charges Enemy with Bayonet !", statusTitle))
+			s.Status.SetString(fmt.Sprintf("%s, %s Desperately Charges Enemy with Bayonet !", statusString, statusTitle))
 		} else {
 			loser.MoraleCheckResult.SetString("Falls Back 5\"")
 			if winner.MoraleState.String() == "Eager" {
 				winner.MoraleCheckResult.SetString("Eager Charge with Bayonet !")
-				s.Status.SetString(fmt.Sprintf("%s Falls Back 5\" %s, %s Pursues with Bayonet !", statusTitle, loser.MoraleState.String(), victorTitle))
+				s.Status.SetString(fmt.Sprintf("%s, %s Falls Back 5\" %s, %s Pursues with Bayonet !", statusString, statusTitle, loser.MoraleState.String(), victorTitle))
 			} else {
-				s.Status.SetString(fmt.Sprintf("%s Falls Back 5\" %s", statusTitle, loser.MoraleState.String()))
+				s.Status.SetString(fmt.Sprintf("%s, %s Falls Back 5\" %s", statusString, statusTitle, loser.MoraleState.String()))
 			}
 			s.Resolved = true
 		}
@@ -165,13 +195,13 @@ func (s *ContactSituation) FirefightCheck() {
 		if loser.Terrain.String() == "Open" {
 			if loser.MoraleState.String() == "Eager" {
 				loser.MoraleCheckResult.SetString("Desperate Charge with Bayonet !")
-				s.Status.SetString(fmt.Sprintf("%s Desperately Charges Enemy with Bayonet !", statusTitle))
+				s.Status.SetString(fmt.Sprintf("%s, %s Desperately Charges Enemy with Bayonet !", statusString, statusTitle))
 			} else {
 				loser.MoraleCheckResult.SetString("Falls Back 2\"")
-				s.Status.SetString(fmt.Sprintf("%s Falls Back 2\" %s", statusTitle, loser.MoraleState.String()))
+				s.Status.SetString(fmt.Sprintf("%s, %s Falls Back 2\" %s", statusString, statusTitle, loser.MoraleState.String()))
 			}
 		}
 	default:
-		s.Status.SetString(fmt.Sprintf("After %d minutes of firefight", s.FirefightRound*20))
+		s.Status.SetString(fmt.Sprintf("%s, firefight continues", statusString))
 	}
 }

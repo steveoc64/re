@@ -5,10 +5,10 @@ import (
 	"fyne.io/fyne/widget"
 )
 
-func Skirmish() fyne.CanvasObject {
+func CavalryVCavalry() fyne.CanvasObject {
 
 	return widget.NewVBox(
-		widget.NewGroup("Skirmish Attack"),
+		widget.NewGroup("Cavalry Charge"),
 	)
 
 }
